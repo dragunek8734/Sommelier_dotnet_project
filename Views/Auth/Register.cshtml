@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Register Page";
+}
+@model dotnetprojekt.Models.UserRegister
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div class="w-full h-screen flex justify-center items-center bg-gradient-to-r from-[#f5ecd7] via-[#f3e7ce] to-[#e9dbc3]">
+    <div class="w-full max-w-md">
+        <div class="flex flex-col items-center mb-8">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#e9dbc3] to-[#c2ac80] flex items-center justify-center shadow-lg mb-4">
+                <i class="fas fa-user-plus text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-[#7c6a4d] drop-shadow">Create Account</h1>
+            <p class="text-[#b09a6b] mt-1">Join the Wine Lovers community</p>
+        </div>
+        <form class="bg-[#f9f6f1]/80 backdrop-blur-lg shadow-2xl rounded-2xl px-10 pt-10 pb-8 mb-4 border border-[#e9dbc3] transition-all duration-300 hover:shadow-[0_8px_32px_0_rgba(194,172,128,0.37)]" asp-controller="Register" asp-action="Register" id="form" method="post">
+            <div class="mb-7">
+                <label class="block text-[#7c6a4d] text-sm font-semibold mb-2" for="username">
+                    Username
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#c2ac80]">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <input asp-for="@Model.Username" class="shadow appearance-none border border-[#e9dbc3] rounded-lg w-full py-3 pl-11 pr-3 text-[#7c6a4d] leading-tight focus:outline-none focus:ring-2 focus:ring-[#c2ac80] focus:border-transparent transition duration-200 bg-[#f9f6f1]/90 hover:bg-[#f5ecd7]/90" id="username" type="text" placeholder="Enter your username" autocomplete="username">
+                </div>
+                <span asp-validation-for="@Model.Username" class="error text-red-500 text-xs mt-1 block"></span>
+            </div>
+            <div class="mb-7">
+                <label class="block text-[#7c6a4d] text-sm font-semibold mb-2" for="password">
+                    Password
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#c2ac80]">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <input asp-for="@Model.Password" class="shadow appearance-none border border-[#e9dbc3] rounded-lg w-full py-3 pl-11 pr-3 text-[#7c6a4d] leading-tight focus:outline-none focus:ring-2 focus:ring-[#c2ac80] focus:border-transparent transition duration-200 bg-[#f9f6f1]/90 hover:bg-[#f5ecd7]/90" id="password" type="password" placeholder="Create a password" autocomplete="new-password">
+                </div>
+                <span asp-validation-for="@Model.Password" class="error text-red-500 text-xs mt-1 block"></span>
+            </div>
+            <div class="mb-7">
+                <label class="block text-[#7c6a4d] text-sm font-semibold mb-2" for="email">
+                    E-mail
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#c2ac80]">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <input asp-for="@Model.Email" class="shadow appearance-none border border-[#e9dbc3] rounded-lg w-full py-3 pl-11 pr-3 text-[#7c6a4d] leading-tight focus:outline-none focus:ring-2 focus:ring-[#c2ac80] focus:border-transparent transition duration-200 bg-[#f9f6f1]/90 hover:bg-[#f5ecd7]/90" id="email" type="email" placeholder="example@gmail.com" autocomplete="email">
+                </div>
+                <span asp-validation-for="@Model.Email" class="error text-red-500 text-xs mt-1 block"></span>
+            </div>
+            @if (ViewBag.message != null)
+            {
+                <div class="mb-5 p-3 bg-red-100/80 border-l-4 border-red-500 rounded-lg animate-pulse">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                        <span class="text-red-700 font-medium">@ViewBag.message</span>
+                    </div>
+                </div>
+            }
+            <div class="flex flex-col gap-4">
+                <button class="w-full bg-gradient-to-r from-[#e9dbc3] to-[#c2ac80] hover:from-[#c2ac80] hover:to-[#b09a6b] text-[#7c6a4d] font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c2ac80] focus:ring-offset-2 shadow-md transition-all duration-200 flex justify-center items-center text-lg tracking-wide" type="submit">
+                    <i class="fas fa-user-plus mr-2"></i> Create account
+                </button>
+            </div>
+        </form>
+        <div class="text-center text-[#b09a6b] text-xs mt-4">
+            <p>&copy; @DateTime.Now.Year Wine Lovers. All rights reserved.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

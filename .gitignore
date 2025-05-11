@@ -1,0 +1,68 @@
+.env
+[Bb]in/
+[Oo]bj/
+artifacts/
+/.vs
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio and Visual Studio Code
+.vscode/
+*.code-workspace
+.vs/
+.history/
+*.vsix
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Local History
+.localhistory/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# .NET Scaffolding
+ScaffoldingReadMe.txt
+
+# appsettings files with secrets - uncomment if needed
+# appsettings.*.json
+
+# Published files
+**/Properties/PublishProfiles/
+**/Properties/ServiceDependencies/
+
+# github stuff
+.github/
+documentation
+memory-bank

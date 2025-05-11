@@ -1,0 +1,21 @@
+﻿@if (TempData["AlertMessage"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: '@(TempData["AlertType"] ?? "info")',
+            title: '@TempData["AlertMessage"]',
+            showConfirmButton: false,
+            timer: 3000,
+            position: 'top-end',
+            toast: true,
+            background: '#f8f9fa',
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        });
+    </script>
+}

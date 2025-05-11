@@ -1,0 +1,126 @@
+@model IEnumerable<dotnetprojekt.Models.Country>
+
+@{
+    ViewData["Title"] = "Wine Regions";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="w-full flex justify-center text-beige-200 font-bold text-5xl font-dancing-script mb-4">Select a country</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var country in Model)
+        {
+            <a asp-action="CountryDetails" asp-route-id="@country.Id" 
+               class="block rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105">
+                <!-- Sekcja ze zdjęciem kraju -->
+                <div class="h-32 overflow-hidden relative">
+                    <img src="~/images/countries/@(GetImageFileName(country.Name))" 
+                         alt="@country.Name landscape" 
+                         class="w-full h-full object-cover" />
+                    <!-- Półprzezroczysty nakładka dla lepszego kontrastu tekstu -->
+                    <div class="absolute inset-0 bg-wine-700 opacity-30"></div>
+                </div>
+                
+                <!-- Sekcja z nazwą kraju i flagą -->
+                <div class="p-4 flex flex-row items-center justify-center bg-beige-200 hover:bg-beige-300">
+                    <h3 class="text-2xl font-semibold text-center text-wine-700 mr-3">@country.Name</h3>
+                    <div class="rounded shadow-sm overflow-hidden" style="width: 48px; height: 36px;">
+                        <img src="https://flagcdn.com/w80/@(GetCountryCode(country.Name)).png" 
+                             alt="@country.Name flag" 
+                             class="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+@functions {
+    public string GetCountryCode(string countryName)
+    {
+        return countryName.ToLower() switch
+        {
+            "france" => "fr",
+            "italy" => "it",
+            "spain" => "es",
+            "germany" => "de",
+            "portugal" => "pt",
+            "argentina" => "ar",
+            "chile" => "cl",
+            "united states" => "us",
+            "australia" => "au",
+            "new zealand" => "nz",
+            "south africa" => "za",
+            "austria" => "at",
+            "greece" => "gr",
+            "hungary" => "hu",
+            "switzerland" => "ch",
+            "canada" => "ca",
+            "brazil" => "br",
+            "japan" => "jp",
+            "south korea" => "kr",
+            "mexico" => "mx",
+            "uruguay" => "uy",
+            "czech republic" => "cz",
+            "slovakia" => "sk",
+            "slovenia" => "si",
+            "bulgaria" => "bg",
+            "romania" => "ro",
+            "serbia" => "rs",
+            "croatia" => "hr",
+            "montenegro" => "me",
+            "georgia" => "ge",
+            "armenia" => "am",
+            "israel" => "il",
+            "turkey" => "tr",
+            "lebanon" => "lb",
+            "malta" => "mt",
+            "moldova" => "md",
+            "ukraine" => "ua",
+            "russia" => "ru",
+            "united kingdom" => "gb",
+            _ => "xx" // domyślna flaga dla nierozpoznanych krajów
+        };
+    }
+    
+    public string GetImageFileName(string countryName)
+    {
+        // Zwraca nazwę pliku obrazu na podstawie nazwy kraju
+        return countryName.ToLower() switch
+        {
+            "france" => "france.jpg",
+            "italy" => "italy.jpg",
+            "spain" => "spain.jpg", 
+            "germany" => "germany.jpg",
+            "portugal" => "portugal.jpg",
+            "argentina" => "argentina.jpg",
+            "chile" => "chile.jpg",
+            "united states" => "usa.jpg",
+            "australia" => "australia.jpg",
+            "new zealand" => "new-zealand.jpg",
+            "south africa" => "south-africa.jpg",
+            "austria" => "austria.jpg",
+            "greece" => "greece.jpg",
+            "canada" => "canada.jpg",
+            "brazil" => "brazil.jpg",
+            "croatia" => "croatia.jpg",
+            "czech republic" => "czech-republic.jpg",
+            "hungary" => "hungary.jpg",
+            "lebanon" => "lebanon.jpg",
+            "israel" => "israel.jpg",
+            "malta" => "malta.jpg",
+            "mexico" => "mexico.jpg",
+            "moldova" => "moldova.jpg",
+            "romania" => "romania.jpg",
+            "russia" => "russia.jpg",
+            "slovenia" => "slovenia.jpg",
+            "switzerland" => "switzerland.jpg",
+            "turkey" => "turkey.jpg",
+            "ukraine" => "ukraine.jpg",
+            "united kingdom" => "uk.jpg",
+            "uruguay" => "uruguay.jpg",
+            
+            _ => "default-vineyard.jpg" // domyślny obraz dla pozostałych krajów
+        };
+    }
+}

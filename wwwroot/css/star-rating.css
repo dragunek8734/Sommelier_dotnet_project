@@ -1,0 +1,73 @@
+/* Star Rating Component Styles */
+.star-container {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.star-btn-half {
+    cursor: pointer;
+    z-index: 20;
+}
+
+.star-btn-full {
+    cursor: pointer;
+    z-index: 10;
+}
+
+.star-half-overlay {
+    z-index: 15;
+    transition: opacity 0.15s ease;
+}
+
+/* Add hover effect for better UX */
+.star-container:hover .star-svg {
+    transform: scale(1.1);
+}
+
+.star-container .star-svg {
+    transition: all 0.2s ease;
+}
+
+/* Custom colors for stars */
+.text-yellow-400 {
+    color: #FACC15;
+}
+
+.text-gray-300 {
+    color: #D1D5DB;
+}
+
+/* Animation for star selection */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.star-container.selected .star-svg,
+.star-container.selected .star-half-overlay > svg {
+    animation: pulse 0.3s ease-in-out;
+}
+
+/* Accessibility focus styles */
+.star-btn-half:focus, 
+.star-btn-full:focus {
+    outline: 2px solid #4F46E5;
+    border-radius: 4px;
+}
+
+.star-btn-half:focus:not(:focus-visible),
+.star-btn-full:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    .star-container {
+        width: 36px;
+        height: 35px;
+    }
+}

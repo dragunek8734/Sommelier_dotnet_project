@@ -1,0 +1,101 @@
+@model Dictionary<string, object>
+@{
+    ViewData["Title"] = "Database Diagnostics";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Database Performance Diagnostics</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Database Size</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalWines"]</div>
+                <div class="text-sm text-gray-600">Wines</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalWineTypes"]</div>
+                <div class="text-sm text-gray-600">Wine Types</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalCountries"]</div>
+                <div class="text-sm text-gray-600">Countries</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalRegions"]</div>
+                <div class="text-sm text-gray-600">Regions</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalGrapes"]</div>
+                <div class="text-sm text-gray-600">Grapes</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalWineries"]</div>
+                <div class="text-sm text-gray-600">Wineries</div>
+            </div>
+            <div class="bg-beige-100 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-gray-800">@Model["TotalRatings"]</div>
+                <div class="text-sm text-gray-600">Ratings</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Query Performance (milliseconds)</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Query Type</th>
+                        <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Time (ms)</th>
+                        <th class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-3 px-4 border-b border-gray-200">Table Count Queries</td>
+                        <td class="py-3 px-4 border-b border-gray-200">@Model["CountingTime"]</td>
+                        <td class="py-3 px-4 border-b border-gray-200">Time to count all main tables</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 border-b border-gray-200">Simple Query</td>
+                        <td class="py-3 px-4 border-b border-gray-200">@Model["SimpleQueryTime"]</td>
+                        <td class="py-3 px-4 border-b border-gray-200">First 50 wines, no includes</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 border-b border-gray-200">Complex Query</td>
+                        <td class="py-3 px-4 border-b border-gray-200">@Model["ComplexQueryTime"]</td>
+                        <td class="py-3 px-4 border-b border-gray-200">First 50 wines with includes</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 border-b border-gray-200">Array Filter</td>
+                        <td class="py-3 px-4 border-b border-gray-200">@Model["ArrayFilterTime"]</td>
+                        <td class="py-3 px-4 border-b border-gray-200">GrapeIds filter (found @Model["GrapeFilterCount"] wines)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 px-4 border-b border-gray-200">Text Search</td>
+                        <td class="py-3 px-4 border-b border-gray-200">@Model["TextSearchTime"]</td>
+                        <td class="py-3 px-4 border-b border-gray-200">Similarity search (found @Model["TextSearchCount"] wines)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Performance Optimization Tips</h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
+            <li>If array filtering (GrapeIds, Vintages) is slow, consider using a separate table with foreign keys</li>
+            <li>Add indexes for frequently filtered columns (Type, Country, Acidity)</li>
+            <li>Consider caching common search results</li>
+            <li>Check if the database server is properly optimized for your queries</li>
+            <li>Use pagination to limit results when displaying to users</li>
+        </ul>
+    </div>
+    
+    <div class="mt-6">
+        <a href="/Search" class="bg-wine-600 hover:bg-wine-700 text-white py-2 px-4 rounded">
+            Go to Search Page
+        </a>
+    </div>
+</div>

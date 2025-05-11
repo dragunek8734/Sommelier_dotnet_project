@@ -1,0 +1,96 @@
+@model dotnetprojekt.Models.Country
+
+@{
+    ViewData["Title"] = $"Wine Regions in {Model.Name}";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6 flex items-center">
+        <h1 class="text-4xl font-bold text-wine-700 mr-3">@Model.Name</h1>
+        <div class="rounded shadow-sm overflow-hidden" style="width: 48px; height: 36px;">
+            <img src="https://flagcdn.com/w80/@(GetCountryCode(Model.Name)).png" 
+                 alt="@Model.Name flag" 
+                 class="w-full h-full object-cover" />
+        </div>
+    </div>
+
+    <p class="text-lg text-beige-800 mb-8">Choose a wine region to explore local wineries and wines.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var region in Model.Regions.OrderBy(r => r.Name))
+        {
+            <a asp-action="RegionDetails" asp-route-id="@region.Id" 
+               class="block bg-beige-100 hover:bg-beige-200 rounded-lg shadow-md transition duration-300 transform hover:scale-105 overflow-hidden">
+                <div class="h-48 bg-cover bg-center" style="background-image: url(@GetRegionImageUrl(region.Name))">
+                </div>
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold text-wine-700">@region.Name</h3>
+                    <p class="text-gray-600 mt-1">@region.Wineries.Count wineries</p>
+                </div>
+            </a>
+        }
+    </div>
+
+    <div class="mt-8">
+        <a asp-action="Index" class="text-wine-600 hover:text-wine-800 font-medium">← Back to Countries</a>
+    </div>
+</div>
+
+@functions {
+    public string GetCountryCode(string countryName)
+    {
+        return countryName.ToLower() switch
+        {
+            "france" => "fr",
+            "italy" => "it",
+            "spain" => "es",
+            "germany" => "de",
+            "portugal" => "pt",
+            "argentina" => "ar",
+            "chile" => "cl",
+            "united states" => "us",
+            "australia" => "au",
+            "new zealand" => "nz",
+            "south africa" => "za",
+            "austria" => "at",
+            "greece" => "gr",
+            "hungary" => "hu",
+            "switzerland" => "ch",
+            "canada" => "ca",
+            "brazil" => "br",
+            "japan" => "jp",
+            "south korea" => "kr",
+            "mexico" => "mx",
+            "uruguay" => "uy",
+            "czech republic" => "cz",
+            "slovakia" => "sk",
+            "slovenia" => "si",
+            "bulgaria" => "bg",
+            "romania" => "ro",
+            "serbia" => "rs",
+            "croatia" => "hr",
+            "montenegro" => "me",
+            "georgia" => "ge",
+            "armenia" => "am",
+            "israel" => "il",
+            "turkey" => "tr",
+            "lebanon" => "lb",
+            "malta" => "mt",
+            "moldova" => "md",
+            "ukraine" => "ua",
+            "russia" => "ru",
+            "united kingdom" => "gb",
+            _ => "xx" // domyślna flaga dla nierozpoznanych krajów
+        };
+    }
+
+    public string GetRegionImageUrl(string regionName)
+    {
+        // Tutaj możesz dodać logikę do mapowania regionów na zdjęcia
+        // Na razie zwracam placeholder
+        return "https://placehold.co/800x400?text=" + regionName;
+        
+        // Alternatywnie możesz użyć zdjęć z Unsplash
+        // return $"https://source.unsplash.com/800x400/?vineyard,{regionName}";
+    }
+}

@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Authentication Test Page";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">JWT Authentication Test</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Test Endpoints</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-medium text-gray-700">Public Endpoint</h3>
+                    <p class="text-sm text-gray-600 mb-2">This endpoint doesn't require authentication</p>
+                    <a href="/AuthTest/Public" target="_blank" class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition">Access Public</a>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-gray-700">Protected Endpoint</h3>
+                    <p class="text-sm text-gray-600 mb-2">This endpoint requires authentication (should redirect if not logged in)</p>
+                    <a href="/AuthTest/Protected" target="_blank" class="inline-block bg-wine-600 hover:bg-wine-700 text-white px-4 py-2 rounded transition">Access Protected</a>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-gray-700">Auth Status Test</h3>
+                    <p class="text-sm text-gray-600 mb-2">Check if you're currently authenticated</p>
+                    <a href="/AuthTest/TestAuth" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">Check Auth Status</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Authentication Instructions</h2>
+            <ol class="list-decimal pl-4 space-y-2 text-gray-700">
+                <li>First, check the server console to ensure logging is active</li>
+                <li>Try accessing the "Auth Status Test" to see if you have an active authentication session</li>
+                <li>If not authenticated, log in through the normal login form</li>
+                <li>After logging in, test the "Protected Endpoint" to verify authentication</li>
+                <li>Review the server console for detailed JWT debugging information</li>
+            </ol>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-md">
+                <h3 class="font-medium text-blue-800">Debug Information</h3>
+                <p class="text-sm text-blue-700">Your authentication cookie status: <strong>@(Context.Request.Cookies.ContainsKey("jwt") ? "JWT cookie found" : "No JWT cookie")</strong></p>
+                <p class="text-sm text-blue-700">Authentication status: <strong>@(User.Identity?.IsAuthenticated == true ? "Authenticated" : "Not authenticated")</strong></p>
+            </div>
+        </div>
+    </div>
+</div>

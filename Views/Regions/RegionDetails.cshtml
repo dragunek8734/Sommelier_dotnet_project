@@ -1,0 +1,80 @@
+@model dotnetprojekt.Models.Region
+
+@{
+    ViewData["Title"] = "Wine Regions";
+}
+
+<div class="container px-4 py-8 mx-auto">
+    <nav class="text-sm mb-6 text-gray-500">
+        <a asp-action="Index" class="hover:text-wine-600">Regions</a> &gt; 
+        <a asp-action="CountryDetails" asp-route-id="@Model.CountryId" class="hover:text-wine-600">@Model.Country.Name</a> &gt;
+        <span class="text-wine-600">@Model.Name</span>
+    </nav>
+
+    <div class="bg-beige-100 rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-wine-700 text-white p-6 relative h-48 md:h-64">
+            <img src="@GetRegionImageUrl(Model.Name)" alt="@Model.Name landscape" 
+                 class="absolute inset-0 w-full h-full object-cover opacity-40" />
+            <div class="relative z-10 flex flex-col h-full justify-center">
+                <h1 class="text-4xl font-bold text-beige-200 font-dancing-script">@Model.Name</h1>
+                <p class="text-xl text-beige-100">@Model.Country.Name</p>
+                <p class="text-sm mt-2 text-beige-50">@Model.Wineries?.Count() wineries</p>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <h2 class="text-xl font-semibold text-wine-700 mb-4">Wineries in @Model.Name</h2>
+            
+            @if (Model.Wineries != null && Model.Wineries.Any())
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach (var winery in Model.Wineries)
+                    {
+                        <div class="bg-white rounded shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                            <h3 class="text-lg font-medium">@winery.Name</h3>
+                            @if (!string.IsNullOrEmpty(winery.Website))
+                            {
+                                <a href="@winery.Website" target="_blank" class="text-wine-600 hover:underline text-sm">
+                                    Visit Website
+                                </a>
+                            }
+                            <p class="text-gray-500 text-sm mt-2">@winery.Wines?.Count() wines</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-500">No wineries found in this region.</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+@functions {
+    public string GetRegionImageUrl(string regionName)
+    {
+        // Używamy konkretnych adresów URL zamiast losowych
+        return regionName.ToLower() switch
+        {
+            "bordeaux" => "https://images.unsplash.com/photo-1559403832-bd213f4692b9?w=1200&h=800&q=80",
+            "burgundy" => "https://images.unsplash.com/photo-1560707854-8ac1e7d3521f?w=1200&h=800&q=80",
+            "champagne" => "https://images.unsplash.com/photo-1590986562494-4c7c8a1a2f64?w=1200&h=800&q=80",
+            "tuscany" => "https://images.unsplash.com/photo-1543361534-09e5b5ae1d10?w=1200&h=800&q=80",
+            "rioja" => "https://images.unsplash.com/photo-1566903451935-7e6972e27a3e?w=1200&h=800&q=80",
+            "napa valley" => "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&h=800&q=80",
+            "cafayate valley" => "https://images.unsplash.com/photo-1566394477927-5c3d3589ddfe?w=1200&h=800&q=80",
+            "barossa valley" => "https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=1200&h=800&q=80",
+            "mendoza" => "https://images.unsplash.com/photo-1585244759837-6bb8ea3b2b8a?w=1200&h=800&q=80",
+            "douro valley" => "https://images.unsplash.com/photo-1598780840665-fcc8decf829c?w=1200&h=800&q=80",
+            "mosel" => "https://images.unsplash.com/photo-1560707229-b5982d7af255?w=1200&h=800&q=80",
+            "stellenbosch" => "https://images.unsplash.com/photo-1528323273322-d81458248d40?w=1200&h=800&q=80",
+            "chianti" => "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&h=800&q=80",
+            "santorini" => "https://images.unsplash.com/photo-1559403832-bd213f4692b9?w=1200&h=800&q=80",
+            "willamette valley" => "https://images.unsplash.com/photo-1509883236841-6601c1fcc9c4?w=1200&h=800&q=80",
+            "marlborough" => "https://images.unsplash.com/photo-1526137625231-77eaa0ab4d6a?w=1200&h=800&q=80",
+            _ => "https://images.unsplash.com/photo-1536821553673-9dac57d4a3fa?w=1200&h=800&q=80" // Domyślny obraz winnic
+        };
+    }
+}

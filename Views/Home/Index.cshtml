@@ -1,0 +1,218 @@
+@model List<dotnetprojekt.Models.Wine>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-[#f9f6f1] via-[#f5ecd7] to-[#e9dbc3] flex flex-col">
+    <!-- Hero Section -->
+    <div class="text-center flex flex-col items-center py-16 px-4">
+        <h1 class="text-[#b09a6b] font-bold text-7xl font-dancing-script mb-4 drop-shadow-lg">Winelovers</h1>
+        <p class="text-2xl text-[#7c6a4d] mb-8">Your Personal AI Sommelier Experience</p>
+        <!-- Search Bar -->
+        <div class="w-full max-w-md mb-10">
+            <form id="search-form" action="/Search" method="get" class="relative">
+                <input type="text" 
+                       id="wine-search" 
+                       name="query" 
+                       placeholder="Search wines, regions, or flavors..." 
+                       class="w-full p-4 pr-12 border-2 borde1r-[#e9dbc3] rounded-2xl bg-[#f9f6f1]/80 text-[#7c6a4d] focus:outline-none focus:border-[#c2ac80] shadow-md transition duration-200 placeholder-[#b09a6b]"
+                       autocomplete="off">
+                <button type="submit" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#b09a6b] hover:text-[#7c6a4d] transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+                <div id="search-results" class="absolute w-full bg-white rounded-b-2xl shadow-lg hidden z-10"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col md:flex-row w-full px-8 mb-12 gap-8">
+        <!-- AI Sommelier Features -->
+        <section class="w-full md:w-1/3 bg-[#f3e7ce]/80 border-2 border-[#e9dbc3] rounded-2xl shadow-lg p-8 backdrop-blur-md">
+            <h2 class="text-3xl font-dancing-script text-[#7c6a4d] mb-6">Your AI Sommelier</h2>
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-[#b09a6b] mb-2">Wine Recommendations</h3>
+                <p class="text-[#7c6a4d]">Get personalized wine suggestions based on your taste preferences and occasion.</p>
+            </div>
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-[#b09a6b] mb-2">Food Pairing</h3>
+                <p class="text-[#7c6a4d]">Discover the perfect wine to complement your meal or the ideal dish for your favorite wine.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-[#b09a6b] mb-2">Wine Education</h3>
+                <p class="text-[#7c6a4d]">Learn about regions, grape varieties, and wine-making techniques from our AI expert.</p>
+            </div>
+            <a href="#" class="mt-8 inline-block bg-[#e9dbc3] hover:bg-[#f5ecd7] text-[#7c6a4d] font-semibold py-3 px-6 rounded-xl shadow transition duration-300">
+                Ask Our Sommelier
+            </a>
+        </section>
+        <!-- Wine Image and Featured Wines -->
+        <div class="w-full md:w-2/3 flex flex-col">
+            <img src="~/images/grape_farm1.jpg" class="border-2 border-[#e9dbc3] rounded-2xl mb-8 w-full h-64 md:h-80 object-cover shadow-md" alt="Vineyard landscape">
+            <!-- Featured Wines Section -->
+            <div class="border-2 border-[#e9dbc3] rounded-2xl p-8 bg-[#f3e7ce]/80 shadow-lg backdrop-blur-md">
+                <h2 class="text-3xl font-dancing-script text-[#7c6a4d] mb-6">Top Rated Selections</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var wine in Model)
+                        {
+                            <a href="/Wine/Details/@wine.Id" class="bg-white/90 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-all duration-300 border border-[#e9dbc3] flex flex-col">
+                                <div class="h-48 bg-[#f9f6f1] relative flex items-center justify-center">
+                                    <img src="~/images/labels/@(wine.Id).jpeg" alt="@wine.Name" class="h-full w-full object-contain p-2"
+                                         onerror="this.onerror=null; this.src='/images/wine-placeholder.jpg';">
+                                </div>
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <h3 class="font-semibold text-[#7c6a4d]">@wine.Name</h3>
+                                    <p class="text-sm text-[#b09a6b] mb-2">@(wine.Country?.Name ?? "Unknown Region") • @(wine.Type?.Name ?? "Unknown Type")</p>
+                                    <div class="flex items-center mb-2">
+                                        @{
+                                            decimal avgRating = wine.Ratings.Any() ? wine.Ratings.Average(r => r.RatingValue) : 0;
+                                            int fullStars = (int)Math.Floor(avgRating);
+                                            bool hasHalfStar = (double)(avgRating - fullStars) >= 0.5;
+                                        }
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            if (i < fullStars)
+                                            {
+                                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            }
+                                            else if (i == fullStars && hasHalfStar)
+                                            {
+                                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" clip-path="polygon(0 0, 50% 0, 50% 100%, 0 100%)"></path>
+                                                </svg>
+                                            }
+                                            else
+                                            {
+                                                <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            }
+                                        }
+                                        <span class="ml-1 text-sm text-[#b09a6b]">(@avgRating.ToString("0.0"))</span>
+                                    </div>
+                                    <p class="text-[#b09a6b] text-sm line-clamp-2">@(string.IsNullOrEmpty(wine.Elaborate) ? "A delightful wine experience." : wine.Elaborate)</p>
+                                </div>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < 3; i++)
+                        {
+                            <div class="bg-white/90 rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-all duration-300 border border-[#e9dbc3] flex flex-col">
+                                <div class="h-48 bg-[#f9f6f1] relative flex items-center justify-center">
+                                    <div class="absolute inset-0 flex items-center justify-center text-[#b09a6b]">
+                                        <span>Wine Image</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <h3 class="font-semibold text-[#7c6a4d]">Sample Wine @(i+1)</h3>
+                                    <p class="text-sm text-[#b09a6b] mb-2">Region • Type</p>
+                                    <div class="flex items-center mb-2">
+                                        @for (int j = 0; j < 5; j++)
+                                        {
+                                            <svg class="w-4 h-4 @(j < 4 ? "text-yellow-500" : "text-gray-300")" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        }
+                                    </div>
+                                    <p class="text-[#b09a6b] text-sm line-clamp-2">A delightful wine with notes of...</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="mt-6 text-center">
+                    <a href="/Search" class="inline-block bg-[#e9dbc3] hover:bg-[#f5ecd7] text-[#7c6a4d] font-semibold py-2 px-6 rounded-xl shadow transition duration-300">
+                        Explore All Wines
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Interactive Wine Quiz Section -->
+    <div class="w-full px-8 mb-12">
+        <div class="border-2 border-[#e9dbc3] rounded-2xl p-8 bg-[#f9f6f1]/80 text-center shadow-lg backdrop-blur-md">
+            <h2 class="text-3xl font-dancing-script text-[#7c6a4d] mb-3">Discover Your Wine Personality</h2>
+            <p class="text-[#7c6a4d] mb-6">Take our quick quiz to find wines that match your unique taste preferences</p>
+            <a href="#" class="inline-block bg-[#e9dbc3] hover:bg-[#f5ecd7] text-[#7c6a4d] font-semibold py-3 px-8 rounded-xl shadow transition duration-300">
+                Start Wine Quiz
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('wine-search');
+        const resultsContainer = document.getElementById('search-results');
+        
+        searchInput.addEventListener('input', debounce(async function() {
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
+                const results = await response.json();
+                
+                if (results.length > 0) {
+                    displayResults(results);
+                    resultsContainer.classList.remove('hidden');
+                } else {
+                    resultsContainer.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Error searching wines:', err);
+            }
+        }, 300));
+        
+        function displayResults(results) {
+            resultsContainer.innerHTML = '';
+            
+            results.forEach(wine => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'p-3 border-b border-gray-100 hover:bg-beige-100 cursor-pointer';
+                resultItem.innerHTML = `
+                    <div class="font-medium">${wine.name}</div>
+                    <div class="text-sm text-gray-500">${wine.type}</div>
+                `;
+                
+                resultItem.addEventListener('click', () => {
+                    window.location.href = `/Wine/Details/${wine.id}`;
+                });
+                
+                resultsContainer.appendChild(resultItem);
+            });
+        }
+        
+        // Hide results when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !resultsContainer.contains(event.target)) {
+                resultsContainer.classList.add('hidden');
+            }
+        });
+        
+        // Debounce utility function
+        function debounce(func, delay) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+    });
+</script>
+}

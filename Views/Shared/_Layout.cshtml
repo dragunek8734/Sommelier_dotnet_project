@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Winelovers</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/app.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/dotnetprojekt.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Dropdown animation */
+        .dropdown-menu-animate {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+            pointer-events: none;
+            transition: opacity 0.25s cubic-bezier(.4,0,.2,1), transform 0.25s cubic-bezier(.4,0,.2,1);
+        }
+        .dropdown-menu-animate.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Dropdown positioning classes */
+        .dropdown-container {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            right: 10%;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 14rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 9999;
+        }
+
+        /* Mobile optimizations */
+        @@media (max-width: 640px) {
+            .dropdown-mobile-optimize {
+                position: fixed !important;
+                top: auto !important;
+                right: 10px !important;
+                left: auto !important;
+                width: calc(100% - 2rem) !important;
+                max-width: 20rem !important;
+                margin-top: 0 !important;
+                max-height: calc(100vh - 120px) !important;
+                z-index: 9999 !important;
+            }
+        }
+    </style>
+    <!-- Removed the <style> block -->
+</head>
+<body class="flex flex-col min-h-screen bg-beige-400">
+    <!--Already logged in Partial pop-up-->
+    @await Html.PartialAsync("_AlertPartial")
+    <header>
+        <!-- Main Navigation -->
+        <nav class="bg-beige-500 shadow-md relative z-20"> <!-- Added relative and z-index -->
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <a href="/" class="no-underline flex items-center justify-center">
+                            <i class="fa-solid fa-wine-glass text-wine-600 text-3xl"></i>
+                            <h1 class="text-beige-200 font-bold text-4xl font-dancing-script cursor-pointer ml-2">Winelovers</h1>
+                        </a>
+                    </div>
+
+                    <!-- Desktop Navigation Menu -->
+                    <div class="hidden lg:flex lg:items-center lg:justify-center mr-20">
+                        <div class="flex space-x-8">
+                            <!-- Added relative, group, and hover effect classes -->
+                            <a asp-controller="Regions" asp-action="Index" class="relative group text-beige-100 hover:text-white transition duration-200 font-medium flex items-center">
+                                <i class="fa-solid fa-globe mr-3 text-2xl"></i>
+                                <span class="flex items-center">Regions</span>
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-current group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                            <a asp-controller="Quiz" asp-action="Index" class="relative group text-beige-100 hover:text-white transition duration-200 font-medium flex items-center">
+                                <i class="fa-solid fa-question-circle mr-3 text-2xl"></i>
+                                <span class="flex items-center">Wine Quiz</span>
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-current group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                            <a href="#" class="relative group text-beige-100 hover:text-white transition duration-200 font-medium flex items-center">
+                                <i class="fa-solid fa-robot mr-3 text-2xl"></i>
+                                <span class="flex items-center">AI Sommelier</span>
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-current group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                            <a asp-controller="Blog" asp-action="Index" class="relative group text-beige-100 hover:text-white transition duration-200 font-medium flex items-center">
+                                <i class="fa-solid fa-book-open mr-3 text-2xl"></i>
+                                <span class="flex items-center">Wine Education</span>
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-current group-hover:w-full transition-all duration-300"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="lg:hidden"> <!-- Removed mobile-menu-button class -->
+                        <button id="mobileMenuToggle" class="text-beige-100 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Search & User Controls -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Account & Cart -->
+                        <div class="flex items-center space-x-4">
+                            @using Microsoft.IdentityModel.JsonWebTokens
+
+                            <!-- Account dropdown with Font Awesome icons -->
+                        <div class="dropdown-container relative flex items-center">
+                                <button id="accountDropdownButton" aria-haspopup="true" aria-expanded="false"
+                                    class="text-beige-100 hover:text-white transition duration-200 flex items-center gap-2 focus:outline-none">
+                                    <i class="fa-solid fa-user text-beige-200 text-2xl md:text-3xl"></i>
+                                    <span class="hidden md:inline text-base font-medium flex items-center">
+                                        @if (User.Identity?.IsAuthenticated ?? false)
+                                        {
+                                            @User.FindFirst(JwtRegisteredClaimNames.Name)?.Value
+                                        }
+                                        else
+                                        {
+                                            <span>Account</span>
+                                        }
+                                    </span>
+                                    <i class="fa-solid fa-chevron-down text-base ml-1 transition-transform group-hover:rotate-180"></i>
+                                </button>
+
+                                <!-- Account dropdown menu with animation -->
+                                <div id="accountDropdownMenu" class="dropdown-menu-animate dropdown-content py-1 hidden" style="transform-origin: top right; right: 0;">
+                                    @if (User.Identity?.IsAuthenticated ?? false)
+                                    {
+                                        <div class="border-b border-gray-200 pb-2 pt-1">
+                                            <p class="px-4 py-2 text-gray-800 font-medium text-base flex items-center">
+                                                <i class="fa-regular fa-circle-user mr-2 text-xl"></i>
+                                                Hello @User.FindFirst(JwtRegisteredClaimNames.Name)?.Value!
+                                            </p>
+                                        </div>
+                                        <a href="/Account" class="flex items-center px-4 py-2 text-base text-gray-800 hover:bg-beige-100 transition-colors">
+                                            <i class="fa-solid fa-user-gear mr-3 text-lg"></i> My Account
+                                        </a>
+                                        <a href="#" class="flex items-center px-4 py-2 text-base text-gray-800 hover:bg-beige-100 transition-colors">
+                                            <i class="fa-solid fa-heart mr-3 text-lg"></i> Favorites
+                                        </a>
+                                        <a href="#" class="flex items-center px-4 py-2 text-base text-gray-800 hover:bg-beige-100 transition-colors">
+                                            <i class="fa-solid fa-clock-rotate-left mr-3 text-lg"></i> Order History
+                                        </a>
+                                        <div class="border-t border-gray-200 pt-1 mt-1">
+                                            <form asp-controller="Login" asp-action="Logout" method="post">
+                                                <button type="submit" class="w-full flex items-center px-4 py-2 text-base text-gray-800 hover:bg-beige-100 transition-colors">
+                                                    <i class="fa-solid fa-right-from-bracket mr-3 text-lg"></i> Logout
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="px-4 py-3 flex flex-col gap-2">
+                                            <!-- Sign In Button -->
+                                            <a asp-action="Login"
+                                               asp-controller="Auth"
+                                               class="flex items-center justify-center w-full px-6 py-3
+                                                text-base font-medium text-wine-700 transition-all
+                                                duration-200 ease-in-out rounded-full
+                                                bg-transparent hover:bg-beige-100
+                                                border border-beige-300 hover:border-beige-400
+                                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-beige-300
+                                                shadow-sm hover:shadow-inner">
+                                                <i class="fa-solid fa-right-to-bracket mr-3 text-lg"></i>
+                                                Sign in
+                                            </a>
+
+                                            <!-- Sign Up Button -->
+                                            <a asp-action="Register"
+                                               asp-controller="Auth"
+                                               class="flex items-center justify-center w-full px-6 py-3
+                                                text-base font-medium text-wine-700 transition-all
+                                                duration-200 ease-in-out rounded-full
+                                                bg-transparent hover:bg-beige-100
+                                                border border-beige-300 hover:border-beige-400
+                                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-beige-300
+                                                shadow-sm hover:shadow-inner">
+                                                <i class="fa-solid fa-user-plus mr-3 text-lg"></i>
+                                                Sign up
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu (Hidden by default, controlled by JS) -->
+        <!-- Tailwind classes for mobile menu -->
+        <div id="mobileMenu" class="lg:hidden fixed top-0 left-0 right-0 bg-beige-400 p-4 shadow-md z-10 transform -translate-y-full transition-transform duration-300 ease-in-out">
+             <!-- Added padding top to avoid overlap with header -->
+            <div class="pt-16 flex flex-col space-y-3">
+                <a href="/" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-home mr-2"></i> Home
+                </a>
+                <a href="#" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-wine-bottle mr-2"></i> Shop Wines
+                </a>
+                <a asp-controller="Regions" asp-action="Index" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-globe mr-2"></i> Regions
+                </a>
+                <a asp-controller="Quiz" asp-action="Index" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-question-circle mr-2"></i> Wine Quiz
+                </a>
+                <a href="#" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-robot mr-2"></i> AI Sommelier
+                </a>
+                <a asp-controller="Blog" asp-action="Index" class="block pt-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                    <i class="fa-solid fa-book-open mr-2"></i> Wine Education
+                </a>
+
+                <!-- Mobile Search -->
+                <div class="pt-3 relative"> <!-- Removed search-container class -->
+                     <!-- Mobile Search Dropdown -->
+                    <div id="mobileSearchDropdown" class="absolute w-full bg-white rounded-b-md shadow-lg z-50 max-h-60 overflow-y-auto hidden mt-1">
+                        <!-- Live search results will appear here -->
+                    </div>
+                </div>
+            </div>
+            <!-- Account controls in mobile menu -->
+            <div class="flex items-center space-x-4 flex-1 justify-end pt-4 border-t border-beige-300 mt-4">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <div class="w-full">
+                        <p class="text-gray-800 font-medium mb-2">
+                            <i class="fa-solid fa-user mr-2"></i> Hello @User.FindFirst(JwtRegisteredClaimNames.Name)?.Value!
+                        </p>
+                        <a href="/Account" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                            <i class="fa-solid fa-user-gear mr-2"></i> My Account
+                        </a>
+                        <a href="#" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                            <i class="fa-solid fa-heart mr-2"></i> Favorites
+                        </a>
+                        <a href="#" class="block py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                            <i class="fa-solid fa-wine-bottle mr-2"></i> My Cellar
+                        </a>
+                        <form asp-controller="Login" asp-action="Logout" method="post" class="mt-2">
+                            <button type="submit" class="w-full text-left py-2 px-3 rounded text-gray-800 hover:bg-beige-300 hover:text-gray-900 font-medium">
+                                <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="flex items-center py-2 px-4 rounded-full bg-wine-700 text-white hover:bg-wine-800 transition font-medium">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i> Login
+                    </a>
+                    <a asp-controller="Auth" asp-action="Register" class="flex items-center py-2 px-4 rounded-full border border-beige-200 text-beige-800 hover:bg-beige-200 transition font-medium">
+                        <i class="fa-solid fa-user-plus mr-2"></i> Sign up
+                    </a>
+                }
+            </div>
+        </nav>
+    </header>
+    <script>
+        // Dropdown animation and accessibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const accountDropdownButton = document.getElementById('accountDropdownButton');
+            const accountDropdownMenu = document.getElementById('accountDropdownMenu');
+            let dropdownOpen = false;
+
+            function openDropdown() {
+                // First, position the dropdown but keep it invisible for measurement
+                accountDropdownMenu.style.visibility = 'hidden';
+                accountDropdownMenu.classList.remove('hidden');
+
+                // Use requestAnimationFrame to ensure the DOM is updated
+                requestAnimationFrame(() => {
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const buttonRect = accountDropdownButton.getBoundingClientRect();
+
+                    // Reset any previous positioning
+                    accountDropdownMenu.style.maxHeight = '';
+                    accountDropdownMenu.style.top = '';
+
+                    // Apply mobile optimization for small screens
+                    if (viewportWidth < 640) {
+                        // Mobile positioning logic
+                        accountDropdownMenu.classList.add('dropdown-mobile-optimize');
+
+                        // For mobile, position from the button's bottom
+                        const topPosition = buttonRect.bottom + window.scrollY + 5;
+                        accountDropdownMenu.style.top = topPosition + 'px';
+                    } else {
+                        accountDropdownMenu.classList.remove('dropdown-mobile-optimize');
+
+                        // Set basic positioning (standard dropdown)
+                        accountDropdownMenu.style.top = '';
+                        accountDropdownMenu.style.right = '-44px';
+
+                        // Now measure the dropdown
+                        const dropdownRect = accountDropdownMenu.getBoundingClientRect();
+
+                        // Check for vertical overflow and adjust if needed
+                        if (dropdownRect.bottom > viewportHeight) {
+                            const availableHeight = viewportHeight - dropdownRect.top - 20;
+                            if (availableHeight < 200) {
+                                // Not enough space below, position above button
+                                accountDropdownMenu.style.bottom = '100%';
+                                accountDropdownMenu.style.top = 'auto';
+                                accountDropdownMenu.style.marginTop = '0';
+                                accountDropdownMenu.style.marginBottom = '0.5rem';
+                            } else {
+                                // Enough space below, just limit height
+                                accountDropdownMenu.style.maxHeight = `${Math.max(200, availableHeight)}px`;
+                            }
+                        }
+                    }
+
+                    // Make dropdown visible, add open class, update aria attributes
+                    accountDropdownMenu.style.visibility = 'visible';
+                    accountDropdownMenu.classList.add('open');
+                    accountDropdownButton.setAttribute('aria-expanded', 'true');
+                    dropdownOpen = true;
+                });
+            }
+            function closeDropdown() {
+                accountDropdownMenu.classList.remove('open');
+                // Reset any applied styles
+                setTimeout(() => {
+                    if (!dropdownOpen) {
+                        accountDropdownMenu.classList.add('hidden');
+                        // Reset all positioning styles
+                        accountDropdownMenu.style.maxHeight = '';
+                        accountDropdownMenu.style.bottom = '';
+                        accountDropdownMenu.style.marginBottom = '';
+                        accountDropdownMenu.style.top = '';
+                        accountDropdownMenu.classList.remove('dropdown-mobile-optimize');
+                    }
+                }, 250);
+                accountDropdownButton.setAttribute('aria-expanded', 'false');
+                dropdownOpen = false;
+            }
+
+            if (accountDropdownButton && accountDropdownMenu) {
+                accountDropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (dropdownOpen) {
+                        closeDropdown();
+                    } else {
+                        accountDropdownMenu.classList.remove('hidden');
+                        setTimeout(openDropdown, 10);
+                    }
+                });
+                // Keyboard accessibility
+                accountDropdownButton.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') closeDropdown();
+                });
+                // Click outside to close
+                document.addEventListener('mousedown', function(e) {
+                    if (!accountDropdownButton.contains(e.target) && !accountDropdownMenu.contains(e.target)) {
+                        closeDropdown();
+                    }
+                });
+                // Animate out before hiding
+                accountDropdownMenu.addEventListener('transitionend', function() {
+                    if (!dropdownOpen) accountDropdownMenu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+
+    <div class="flex-grow">
+        <main role="">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="bg-beige-500 text-beige-100">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Brand Section -->
+                <div class="col-span-1">
+                    <a href="/" class="no-underline flex items-center mb-4">
+                        <i class="fa-solid fa-wine-glass text-wine-600 text-3xl"></i>
+                        <h2 class="text-beige-200 font-bold text-3xl font-dancing-script ml-2">Winelovers</h2>
+                    </a>
+                    <p class="mb-6 text-sm">Your personal AI Sommelier experience. Discover wines that match your unique tastes and preferences.</p> <!-- Adjusted text size -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-beige-100 hover:text-white transition">
+                            <i class="fa-brands fa-facebook-f h-6 w-6 flex items-center justify-center"></i>
+                        </a>
+                        <a href="#" class="text-beige-100 hover:text-white transition">
+                            <i class="fa-brands fa-instagram h-6 w-6 flex items-center justify-center"></i>
+                        </a>
+                        <a href="#" class="text-beige-100 hover:text-white transition">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4 text-beige-200">Quick Links</h3> <!-- Adjusted text color -->
+                    <ul class="space-y-2 text-sm"> <!-- Adjusted text size -->
+                        <li><a href="/" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="hover:text-white transition">Shop Wines</a></li>
+                        <li><a asp-controller="Regions" asp-action="Index" class="hover:text-white transition">Wine Regions</a></li>
+                        <li><a asp-controller="Blog" asp-action="Index" class="hover:text-white transition">Wine Education</a></li>
+                        <li><a href="#" class="hover:text-white transition">AI Sommelier</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4 text-beige-200">Services</h3> <!-- Adjusted text color -->
+                    <ul class="space-y-2 text-sm"> <!-- Adjusted text size -->
+                        <li><a href="#" class="hover:text-white transition">Wine Club Membership</a></li>
+                        <li><a href="#" class="hover:text-white transition">Wine Tastings</a></li>
+                        <li><a href="#" class="hover:text-white transition">Wine Gift Cards</a></li>
+                        <li><a href="#" class="hover:text-white transition">Corporate Gifts</a></li>
+                        <li><a href="#" class="hover:text-white transition">Wine Cellar Management</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-4 text-beige-200">Join Our Newsletter</h3> <!-- Adjusted text color -->
+                    <p class="mb-4 text-sm">Subscribe to receive wine recommendations, special offers, and tasting notes.</p> <!-- Adjusted text size -->
+                    <form class="flex flex-col sm:flex-row">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-t-md sm:rounded-l-md sm:rounded-r-none bg-beige-100 text-gray-800 w-full text-sm focus:ring-1 focus:ring-beige-300 border-none"> <!-- Adjusted styling -->
+                        <button type="submit" class="bg-beige-200 text-gray-800 hover:bg-beige-300 px-4 py-2 rounded-b-md sm:rounded-r-md sm:rounded-l-none transition text-sm font-semibold">Subscribe</button> <!-- Adjusted styling -->
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="border-t border-beige-400 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-sm">
+                <p>&copy; @DateTime.Now.Year Winelovers - All rights reserved.</p> <!-- Dynamic Year -->
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition">Terms of Service</a>
+                    <a asp-controller="Home" asp-action="Privacy" class="hover:text-white transition">Privacy Policy</a>
+                    <a asp-controller="Home" asp-action="Privacy" class="hover:text-white transition">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    // Close any open dropdowns when toggling mobile menu
+                    if (typeof closeDropdown === 'function') {
+                        closeDropdown();
+                    }
+
+                    // Toggle Tailwind classes for translation
+                    if (mobileMenu.classList.contains('-translate-y-full')) {
+                        mobileMenu.classList.remove('-translate-y-full');
+                        mobileMenu.classList.add('translate-y-0');
+                    } else {
+                        mobileMenu.classList.remove('translate-y-0');
+                        mobileMenu.classList.add('-translate-y-full');
+                    }
+                });
+            }
+
+            // Shared function to handle live search
+            function setupLiveSearch(inputId, dropdownId) {
+                const searchInput = document.getElementById(inputId);
+                const searchDropdown = document.getElementById(dropdownId);
+                let debounceTimer;
+
+                if (!searchInput || !searchDropdown) return;
+
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    clearTimeout(debounceTimer);
+
+                    if (query.length < 2) {
+                        searchDropdown.classList.add('hidden'); // Use Tailwind hidden
+                        searchDropdown.innerHTML = '';
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        fetchSearchResults(query, searchDropdown);
+                    }, 300);
+                });
+
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                        searchDropdown.classList.add('hidden'); // Use Tailwind hidden
+                    }
+                });
+            }
+
+            // Fetch and display search results
+            function fetchSearchResults(query, dropdownElement) {
+                fetch(`/api/search?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        dropdownElement.innerHTML = '';
+
+                        if (data.length === 0) {
+                            dropdownElement.classList.add('hidden'); // Use Tailwind hidden
+                            return;
+                        }
+
+                        data.forEach(wine => {
+                            const item = document.createElement('div');
+                            // Tailwind classes for dropdown items
+                            item.className = 'p-3 border-b border-gray-100 hover:bg-beige-100 cursor-pointer';
+                            item.innerHTML = `
+                                <div class="font-medium text-gray-800">${wine.name}</div>
+                                <div class="text-sm text-gray-500">${wine.type}</div>
+                            `;
+
+                            item.addEventListener('click', () => {
+                                // Redirect to the main search results page when an item is clicked
+                                window.location.href = `/Search/Index?query=${encodeURIComponent(wine.name)}`;
+                            });
+
+                            dropdownElement.appendChild(item);
+                        });
+
+                        dropdownElement.classList.remove('hidden'); // Use Tailwind hidden
+                    })
+                    .catch(error => {
+                        console.error('Error fetching search results:', error);
+                        dropdownElement.classList.add('hidden'); // Hide on error
+                    });
+            }
+
+            // Setup live search for both desktop and mobile
+            setupLiveSearch('searchInput', 'searchDropdown');
+            setupLiveSearch('mobileSearchInput', 'mobileSearchDropdown');
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

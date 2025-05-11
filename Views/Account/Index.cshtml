@@ -1,0 +1,335 @@
+@model dotnetprojekt.Models.UserAccountViewModel
+@{
+    ViewData["Title"] = "My Account";
+    var stats = new[] {
+        new { Label = "Reviews", Value = Model.Ratings?.Count() ?? 0, Icon = "fa-star" },
+        new { Label = "Favorite Types", Value = Model.Preferences?.FavoriteWineTypes?.Count ?? 0, Icon = "fa-wine-bottle" },
+        new { Label = "Regions", Value = Model.Preferences?.FavoriteRegions?.Count ?? 0, Icon = "fa-map-marker-alt" }
+    };
+    
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+
+<div class="max-w-5xl mx-auto py-10 px-4">
+    <!-- Profile Card -->
+    <div class="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow-lg p-8 mb-8 border border-beige-200">
+        <img src="@(!string.IsNullOrEmpty(Model.ProfileImageUrl) ? Model.ProfileImageUrl : "/img/default-avatar.png")" class="w-28 h-28 rounded-full border-4 border-beige-300 shadow-md object-cover" alt="Profile" />
+
+        <div class="md:ml-8 flex-1">
+            <div class="flex items-center space-x-2">
+                <h2 class="text-3xl font-bold text-beige-800">@Model.Username</h2>
+
+                @* Experience Level Badge *@
+                @if (!string.IsNullOrEmpty(Model.Preferences?.Experience))
+                {
+                    <div class="flex items-center gap-2 bg-beige-100 rounded-full px-3 py-1 shadow-inner border border-beige-300">
+                        @{
+                            var experienceLevel = Model.Preferences.Experience.ToLower();
+                            var svgPath = $"/images/experience/{experienceLevel}.svg";
+
+                            // Color mapping based on experience level
+                            var badgeColor = experienceLevel switch
+                            {
+                                "beginner" => "bg-beige-300 text-beige-800",
+                                "enthusiast" => "bg-beige-400 text-beige-900",
+                                "amateur-expert" => "bg-burgundy-300 text-burgundy-900",
+                                "sommelier" => "bg-burgundy-500 text-white",
+                                "master of taste" => "bg-wine-600 text-white",
+                                _ => "bg-beige-200 text-beige-800"
+                            };
+                        }
+
+                        @* SVG Icon with subtle glow *@
+                        <div class="relative">
+                            <img src="@svgPath" alt="@Model.Preferences.Experience"
+                                 class="w-5 h-5 drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)]" />
+                            @if (experienceLevel == "master of taste")
+                            {
+                                <div class="absolute inset-0 rounded-full bg-wine-400/30 animate-pulse"></div>
+                            }
+                        </div>
+
+                        @* Text with level-appropriate styling *@
+                        <span class="text-sm font-medium @badgeColor px-2 py-0.5 rounded-full tracking-wide">
+                            @Model.Preferences.Experience
+                            @if (experienceLevel == "master of taste")
+                            {
+                                <span class="ml-1">👑</span>
+                            }
+                            else if (experienceLevel == "sommelier")
+                            {
+                                <span class="ml-1">🍷</span>
+                            }
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <p class="text-beige-600">@Model.Email</p>
+            <div class="flex space-x-4 mt-2">
+                @foreach (var stat in stats)
+                {
+                    <span class="bg-beige-100 text-beige-800 px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                        <i class="fa @stat.Icon"></i> @stat.Value @stat.Label
+                    </span>
+                }
+                <span class="bg-beige-100 text-beige-800 px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                    <i class="fa fa-calendar"></i> Member since @Model.MemberSince.ToString("yyyy")
+                </span>
+            </div>
+            <a href="/Account/Edit" class="mt-4 inline-block bg-beige-500 hover:bg-beige-600 text-white px-4 py-2 rounded-lg shadow transition"><i class="fa fa-edit"></i> Edit Profile</a>
+        </div>
+    </div>
+
+
+    <!-- Tabs -->
+    <div>
+        <ul class="flex border-b mb-6" id="account-tabs">
+            <li class="mr-6"><a class="tab-link font-semibold text-beige-800 border-b-2 border-beige-500 pb-2 active" href="#profile">Profile</a></li>
+            <li class="mr-6"><a class="tab-link text-beige-600 hover:text-beige-800" href="#preferences">Preferences</a></li>
+            <li class="mr-6"><a class="tab-link text-beige-600 hover:text-beige-800" href="#reviews">Reviews</a></li>
+            <li><a class="tab-link text-beige-600 hover:text-beige-800" href="#privacy">Privacy & Security</a></li>
+        </ul>
+        <div id="profile" class="tab-content">
+            <div class="bg-white rounded-xl shadow p-6 mb-6 border border-beige-100">
+                <h3 class="text-xl font-semibold text-beige-800 mb-4"><i class="fa fa-user-circle mr-2"></i>Profile Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-2"><span class="font-semibold text-beige-700">Username:</span> @Model.Username</div>
+                        <div class="mb-2"><span class="font-semibold text-beige-700">Email:</span> @Model.Email</div>
+                        <div class="mb-2"><span class="font-semibold text-beige-700">Member since:</span> @Model.MemberSince.ToString("MMMM yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="preferences" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow p-6 mb-6 border border-beige-100">
+                <h3 class="text-xl font-semibold text-beige-800 mb-4"><i class="fa fa-heart mr-2"></i>Wine Preferences</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-2">
+                            <span class="font-semibold text-beige-700">Favorite Types:</span>
+                            @if (Model.Preferences?.FavoriteWineTypes?.Any() == true)
+                            {
+                                foreach (var type in Model.Preferences.FavoriteWineTypes)
+                                {
+                                    <span class="inline-block bg-beige-200 text-beige-800 px-2 py-1 rounded-full text-xs mr-1">@type</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-beige-400">None</span>
+                            }
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-semibold text-beige-700">Favorite Regions:</span>
+                            @if (Model.Preferences?.FavoriteRegions?.Any() == true)
+                            {
+                                foreach (var reg in Model.Preferences.FavoriteRegions)
+                                {
+                                    <span class="inline-block bg-beige-200 text-beige-800 px-2 py-1 rounded-full text-xs mr-1">@reg</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-beige-400">None</span>
+                            }
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-semibold text-beige-700">Favorite Flavors:</span>
+                            @if (Model.Preferences?.FavoriteFlavors?.Any() == true)
+                            {
+                                foreach (var flavor in Model.Preferences.FavoriteFlavors)
+                                {
+                                    <span class="inline-block bg-beige-100 text-beige-700 px-2 py-1 rounded-full text-xs mr-1">@flavor</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-beige-400">None</span>
+                            }
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-semibold text-beige-700">Favorite Dishes:</span>
+                            @if (Model.Preferences?.FavoriteDishes?.Any() == true)
+                            {
+                                foreach (var dish in Model.Preferences.FavoriteDishes)
+                                {
+                                    <span class="inline-block bg-beige-100 text-beige-700 px-2 py-1 rounded-full text-xs mr-1">@dish</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-beige-400">None</span>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2"><span class="font-semibold text-beige-700">Experience:</span> <span class="inline-block bg-beige-100 text-beige-700 px-2 py-1 rounded-full text-xs mr-1">@Model.Preferences?.Experience</span></div>
+                        <div class="mb-2">
+                            <span class="font-semibold text-beige-700">Typical Occasions:</span>
+                            @if (Model.Preferences?.TypicalOccasions?.Any() == true)
+                            {
+                                foreach (var occ in Model.Preferences.TypicalOccasions)
+                                {
+                                    <span class="inline-block bg-beige-100 text-beige-700 px-2 py-1 rounded-full text-xs mr-1">@occ</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-beige-400">None</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <a href="/Quiz" class="mt-4 inline-block bg-beige-400 hover:bg-beige-500 text-white px-4 py-2 rounded-lg shadow transition"><i class="fa fa-clipboard-list"></i> Retake Preferences Quiz</a>
+            </div>
+        </div>
+        <div id="reviews" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow p-6 border border-beige-100">
+                <h3 class="text-xl font-semibold text-beige-800 mb-4"><i class="fa fa-star mr-2"></i>My Wine Reviews</h3>
+                @if (Model.Ratings == null || !Model.Ratings.Any())
+                {
+                    <p class="text-beige-700">You haven't reviewed any wines yet.</p>
+                }
+                else
+                {
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach (var review in Model.Ratings)
+                        {
+                            <div class="bg-beige-50 rounded-lg shadow-lg overflow-hidden border border-beige-100 flex flex-col">
+                                @if (!string.IsNullOrEmpty(review.ImagePath))
+                                {
+                                    <img src="@review.ImagePath" alt="Review Image" class="w-full h-40 object-cover" />
+                                }
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <a asp-controller="Wine" asp-action="Details" asp-route-id="@review.WineId" class="text-lg font-semibold text-beige-800 hover:underline">
+                                        @review.WineName
+                                    </a>
+                                    <div class="flex items-center mt-2 mb-3">
+                                        @for (int i = 0; i < (int)review.RatingValue; i++)
+                                        {
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        }
+                                        <span class="text-beige-700 ml-2">@review.RatingValue</span>
+                                    </div>
+                                    <p class="text-beige-600 mb-3 flex-1">@review.Description</p>
+                                    <p class="text-sm text-gray-500">@review.Date.ToString("MMMM dd, yyyy")</p>
+                                    <div class="flex gap-2 mt-2">
+                                        <a asp-controller="Account" asp-action="EditReview" asp-route-id="@review.Id" class="text-beige-600 hover:text-beige-800 text-xs"><i class="fa fa-edit"></i> Edit</a>
+                                        <a asp-controller="Account" asp-action="DeleteReview" asp-route-id="@review.Id" class="text-red-500 hover:text-red-700 text-xs"><i class="fa fa-trash"></i> Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="privacy" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow p-6 border border-beige-100 mb-6">
+                <h3 class="text-xl font-semibold text-beige-800 mb-4"><i class="fa fa-shield-alt mr-2"></i>Privacy & Security</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">Profile Visible:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.ProfileVisible ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.ProfileVisible ? "Yes" : "No")</span>
+                        </div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">Tasting History Visible:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.TastingHistoryVisible ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.TastingHistoryVisible ? "Yes" : "No")</span>
+                        </div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">Two-Factor Authentication:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.TwoFactorEnabled ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.TwoFactorEnabled ? "Enabled" : "Disabled")</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">Email Notifications:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.EmailNotifications ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.EmailNotifications ? "On" : "Off")</span>
+                        </div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">Push Notifications:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.PushNotifications ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.PushNotifications ? "On" : "Off")</span>
+                        </div>
+                        <div class="mb-2 flex items-center">
+                            <span class="font-semibold text-beige-700 mr-2">SMS Notifications:</span>
+                            <span class="inline-block w-3 h-3 rounded-full @(Model.SmsNotifications ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                            <span>@(Model.SmsNotifications ? "On" : "Off")</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <a href="/Account/Privacy" class="inline-block bg-beige-400 hover:bg-beige-500 text-white px-4 py-2 rounded-lg shadow transition"><i class="fa fa-cog"></i> Edit Privacy & Notifications</a>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6 border border-beige-100 mb-6">
+                <h3 class="text-xl font-semibold text-beige-800 mb-4"><i class="fa fa-history mr-2"></i>Login History</h3>
+                @if (Model.LoginHistory == null || !Model.LoginHistory.Any())
+                {
+                    <p class="text-beige-700">No login history available.</p>
+                }
+                else
+                {
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr class="bg-beige-100 text-beige-700">
+                                    <th class="py-2 px-4 text-left">Date</th>
+                                    <th class="py-2 px-4 text-left">IP Address</th>
+                                    <th class="py-2 px-4 text-left">Device</th>
+                                    <th class="py-2 px-4 text-left">Success</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var login in Model.LoginHistory)
+                                {
+                                    <tr class="border-b">
+                                        <td class="py-2 px-4">@login.Date.ToString("g")</td>
+                                        <td class="py-2 px-4">@login.IpAddress</td>
+                                        <td class="py-2 px-4">@login.Device</td>
+                                        <td class="py-2 px-4">
+                                            <span class="inline-block w-3 h-3 rounded-full @(login.Success ? "bg-green-400" : "bg-red-400") mr-2"></span>
+                                            @(login.Success ? "Yes" : "No")
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl shadow p-6 border border-beige-100">
+                <h3 class="text-xl font-semibold text-red-700 mb-4"><i class="fa fa-trash-alt mr-2"></i>Danger Zone</h3>
+                <p class="mb-4 text-beige-700">Deleting your account is irreversible. All your data, reviews, and preferences will be permanently removed.</p>
+                <form asp-controller="Account" asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow transition"><i class="fa fa-trash"></i> Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Simple tab logic
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active', 'font-semibold', 'border-b-2', 'border-beige-500', 'text-beige-800'));
+                this.classList.add('active', 'font-semibold', 'border-b-2', 'border-beige-500', 'text-beige-800');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+                const target = this.getAttribute('href');
+                document.querySelector(target).classList.remove('hidden');
+            });
+        });
+        // Show first tab by default
+        document.querySelector('.tab-link').click();
+    </script>
+}

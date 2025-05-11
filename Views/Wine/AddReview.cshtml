@@ -1,0 +1,225 @@
+@model dotnetprojekt.Models.WineReviewViewModel
+@{
+    ViewData["Title"] = "Add Wine Review";
+    var wineName = ViewBag.WineName as string ?? "Wine";
+    var wineId = Model.WineId;
+    var wineImage = $"/images/labels/{wineId}.jpeg";
+}
+<link rel="stylesheet" href="~/css/star-rating.css" />
+
+<div class="bg-gradient-to-br from-beige-100 to-beige-200 min-h-screen py-10">
+    <div class="container mx-auto px-4 max-w-2xl">
+        <div class="mb-6">
+            <a href="@Url.Action("Details", new { id = wineId })" class="text-wine-600 hover:text-wine-800 font-medium flex items-center inline-block transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Wine Details
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-beige-300">
+            <!-- Wine Context Header -->
+            <div class="flex items-center gap-4 bg-beige-200 p-6 border-b">
+                <img src="@wineImage" alt="@wineName label" class="w-20 h-20 object-contain rounded-lg border bg-white shadow"
+                     onerror="this.onerror=null; this.src='/images/wine-placeholder.jpg';">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-800">@wineName</h2>
+                    <p class="text-gray-500 text-sm">Share your experience and help others discover great wines</p>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <form asp-action="AddReview" method="post" enctype="multipart/form-data" class="space-y-10 divide-y divide-gray-200">
+                    <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+                    <input type="hidden" asp-for="WineId" />
+
+                    <!-- Star Rating -->
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Your Rating <span class="text-xs text-gray-400 ml-1">(required)</span></label>
+                        <div class="flex items-center gap-2" role="radiogroup" aria-label="Star rating">
+                            <div class="rating flex items-center" id="star-rating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <div class="star-container relative mx-1">
+                                        <button type="button" class="star-btn-half left focus:outline-none absolute top-0 left-0 w-1/2 h-full z-10" 
+                                                data-value="@(i - 0.5)" aria-label="Rate @(i - 0.5) stars">
+                                            <span class="sr-only">@(i - 0.5) stars</span>
+                                        </button>
+                                        <button type="button" class="star-btn-full focus:outline-none" 
+                                                data-value="@i" aria-label="Rate @i stars">
+                                            <svg class="w-10 h-10 star-svg text-gray-300 transition-colors duration-150" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="star-half-overlay absolute top-0 left-0 w-1/2 h-full overflow-hidden pointer-events-none opacity-0">
+                                            <svg class="w-10 h-10 text-yellow-400 transition-colors duration-150" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <input type="hidden" asp-for="Rating" id="Rating" />
+                            <span asp-validation-for="Rating" class="text-sm text-red-600 ml-4"></span>
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1 block">Tap a star to rate. Half-stars allowed. 1 = Poor, 5 = Excellent.</span>
+                    </div>
+
+                    <!-- Review Description -->
+                    <div class="pt-8">
+                        <label asp-for="Description" class="block text-gray-700 font-semibold mb-2">Your Review <span class="text-xs text-gray-400 ml-1">(required)</span></label>
+                        <div class="relative">
+                            <textarea asp-for="Description" id="Description" rows="5" maxlength="1000"
+                                class="peer w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine-600 resize-none transition-shadow shadow-sm"
+                                placeholder=" "></textarea>
+                            <label for="Description" class="absolute left-4 top-2 text-gray-400 text-sm pointer-events-none transition-all peer-focus:-top-5 peer-focus:text-xs peer-focus:text-wine-600 peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm">Describe your experience...</label>
+                            <span class="absolute right-4 bottom-2 text-xs text-gray-400" id="descCounter">0/1000</span>
+                        </div>
+                        <span asp-validation-for="Description" class="text-sm text-red-600"></span>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="pt-8">
+                        <label asp-for="ReviewImage" class="block text-gray-700 font-semibold mb-2">Add a Photo <span class="text-xs text-gray-400">(optional)</span></label>
+                        <div id="dropArea" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer relative focus-within:ring-2 focus-within:ring-wine-600">
+                            <input asp-for="ReviewImage" id="ReviewImage" type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png" aria-label="Upload review image" />
+                            <div id="uploadPlaceholder" class="flex flex-col items-center justify-center pointer-events-none">
+                                <svg class="w-10 h-10 mb-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                                </svg>
+                                <span class="text-gray-500 text-sm">Drag & drop or click to upload</span>
+                                <span class="text-xs text-gray-400">JPG, JPEG, PNG (max 5MB)</span>
+                            </div>
+                            <div id="imagePreview" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90">
+                                <img id="previewImg" class="max-h-32 max-w-xs rounded shadow mb-2" src="#" alt="Preview">
+                                <button type="button" id="removeImgBtn" class="text-red-600 hover:underline text-xs">Remove</button>
+                            </div>
+                        </div>
+                        <span asp-validation-for="ReviewImage" class="text-sm text-red-600"></span>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-8">
+                        <a href="@Url.Action("Details", new { id = wineId })" class="bg-gray-200 text-gray-700 py-2 px-5 rounded-lg hover:bg-gray-300 transition">Cancel</a>
+                        <button type="submit" class="bg-wine-600 text-white py-3 px-6 rounded-xl shadow hover:bg-wine-700 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-wine-600">Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Half-star rating logic
+        function updateStars(rating) {
+            const stars = document.querySelectorAll('.star-container');
+            const ratingValue = parseFloat(rating);
+            
+            stars.forEach((star, index) => {
+                const starValue = index + 1;
+                const fullStar = star.querySelector('.star-svg');
+                const halfStarOverlay = star.querySelector('.star-half-overlay');
+                
+                if (starValue <= ratingValue) {
+                    // Full star
+                    fullStar.classList.add('text-yellow-400');
+                    fullStar.classList.remove('text-gray-300');
+                    halfStarOverlay.classList.remove('opacity-100');
+                    halfStarOverlay.classList.add('opacity-0');
+                } 
+                else if (starValue - 0.5 === ratingValue) {
+                    // Half star
+                    fullStar.classList.remove('text-yellow-400');
+                    fullStar.classList.add('text-gray-300');
+                    halfStarOverlay.classList.add('opacity-100');
+                    halfStarOverlay.classList.remove('opacity-0');
+                }
+                else {
+                    // Empty star
+                    fullStar.classList.remove('text-yellow-400');
+                    fullStar.classList.add('text-gray-300');
+                    halfStarOverlay.classList.remove('opacity-100');
+                    halfStarOverlay.classList.add('opacity-0');
+                }
+            });
+        }
+        
+        // Full star button click
+        document.querySelectorAll('.star-btn-full').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const value = this.getAttribute('data-value');
+                document.getElementById('Rating').value = value;
+                updateStars(value);
+            });
+        });
+        
+        // Half star button click
+        document.querySelectorAll('.star-btn-half').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const value = this.getAttribute('data-value');
+                document.getElementById('Rating').value = value;
+                updateStars(value);
+            });
+        });
+        
+        // Set initial stars if editing
+        const initialRating = parseFloat(document.getElementById('Rating').value || "0");
+        if (initialRating) {
+            updateStars(initialRating);
+        }
+
+        // Description character counter
+        const desc = document.getElementById('Description');
+        const counter = document.getElementById('descCounter');
+        if (desc && counter) {
+            const updateCounter = () => counter.textContent = `${desc.value.length}/1000`;
+            desc.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+
+        // Image preview and remove
+        const reviewImage = document.getElementById('ReviewImage');
+        const previewImg = document.getElementById('previewImg');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const removeImgBtn = document.getElementById('removeImgBtn');
+        reviewImage.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    uploadPlaceholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                previewImg.src = "";
+                imagePreview.classList.add('hidden');
+                uploadPlaceholder.classList.remove('hidden');
+            }
+        });
+        removeImgBtn.addEventListener('click', function () {
+            reviewImage.value = "";
+            previewImg.src = "";
+            imagePreview.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+        });
+
+        // Drag & drop for image
+        const dropArea = document.getElementById('dropArea');
+        dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('bg-gray-200'); });
+        dropArea.addEventListener('dragleave', e => { e.preventDefault(); dropArea.classList.remove('bg-gray-200'); });
+        dropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            dropArea.classList.remove('bg-gray-200');
+            if (e.dataTransfer.files.length) {
+                reviewImage.files = e.dataTransfer.files;
+                reviewImage.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
