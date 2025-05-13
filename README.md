@@ -1,7 +1,7 @@
-🛠️ Project Status
+# 🛠️ Project Status
 The project is currently under development – some features may not be fully implemented or available yet.
 
-👥 Contributors
+# 👥 Contributors
 This is a collaborative project – it is not an individual effort. Contributors:
 1. https://github.com/Nikutsuki
 2. https://github.com/babesrap
