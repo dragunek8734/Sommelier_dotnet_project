@@ -1,3 +1,12 @@
+🛠️ Project Status
+The project is currently under development – some features may not be fully implemented or available yet.
+
+👥 Contributors
+This is a collaborative project – it is not an individual effort. Contributors:
+1. https://github.com/Nikutsuki
+2. https://github.com/babesrap
+
+
 # 🍷 Sommelier
 
 **Sommelier** is a casual web application built with **ASP.NET Core** that allows users to catalog, rate, and describe wines. The project is designed for wine enthusiasts who want to build their own tasting collection in a convenient online format.
